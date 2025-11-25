@@ -208,9 +208,10 @@ class GameManager {
 
   private connectWebSocket() {
     try {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const wsUrl = window.location.hostname === 'localhost' 
         ? 'ws://localhost:3001'
-        : `ws://${window.location.hostname}:3001`;
+        : `${protocol}//${window.location.hostname}`;
       
       this.ws = new WebSocket(wsUrl);
 

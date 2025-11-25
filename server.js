@@ -1,10 +1,31 @@
 import { WebSocketServer } from 'ws';
+import express from 'express';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import { createServer } from 'http';
 
-const PORT = 3001;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const PORT = process.env.PORT || 3001;
 const games = new Map();
 const activeSessions = new Map(); // gameId -> { host: ws, guest: ws, gameState: {...} }
 
-const wss = new WebSocketServer({ port: PORT });
+const app = express();
+
+// Serve static files from dist folder
+app.use(express.static(join(__dirname, 'dist')));
+
+// Serve index.html for all routes (SPA support)
+app.get('*', (req, res) => {
+  res.sendFile(join(__dirname, 'dist', 'index.html'));
+});
+
+// Create HTTP server
+const server = createServer(app);
+
+// Attach WebSocket server to HTTP server
+const wss = new WebSocketServer({ server });
 
 console.log(`🎮 Pferdeäpfel WebSocket Server running on port ${PORT}`);
 
@@ -210,4 +231,7 @@ wss.on('connection', (ws) => {
   });
 });
 
-console.log('✨ Server ready to accept connections');
+server.listen(PORT, () => {
+  console.log(`🎮 Pferdeäpfel server running on port ${PORT}`);
+  console.log('✨ Server ready to accept connections');
+});
