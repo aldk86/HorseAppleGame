@@ -135,7 +135,7 @@ function Board({ player1, player2, onGameEnd, onOpponentLeft, isNetworkGame = fa
       setApples(newApples);
       setSelectedPos(null);
       setHighlightedMoves([]);
-      setCurrentTurn(nextTurn);
+      setCurrentTurn(nextTurn as 1 | 2);
       setMoveStartTime(Date.now());
       setElapsedTime(0);
 
