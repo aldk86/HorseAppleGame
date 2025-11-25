@@ -7,6 +7,7 @@ import Setup from './components/Setup';
 import Board from './components/Board';
 import EndModal from './components/EndModal';
 import Settings from './components/Settings';
+import Rules from './components/Rules';
 import { useTheme } from './themeContext';
 
 export interface Player {
@@ -19,7 +20,7 @@ export interface Position {
   col: number;
 }
 
-export type GameState = 'dashboard' | 'networkLobby' | 'createGame' | 'joinGame' | 'setup' | 'playing' | 'ended' | 'settings';
+export type GameState = 'dashboard' | 'networkLobby' | 'createGame' | 'joinGame' | 'setup' | 'playing' | 'ended' | 'settings' | 'rules';
 
 function App() {
   const { isDarkMode } = useTheme();
@@ -97,6 +98,10 @@ function App() {
     setGameState('settings');
   };
 
+  const handleShowRules = () => {
+    setGameState('rules');
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -113,6 +118,7 @@ function App() {
           onPlaySameDevice={handlePlaySameDevice}
           onPlayNetwork={handlePlayNetwork}
           onOpenSettings={handleOpenSettings}
+          onShowRules={handleShowRules}
         />
       )}
 
@@ -170,6 +176,10 @@ function App() {
 
       {gameState === 'settings' && (
         <Settings onBack={handleBackToDashboard} />
+      )}
+
+      {gameState === 'rules' && (
+        <Rules onBack={handleBackToDashboard} />
       )}
     </div>
   );

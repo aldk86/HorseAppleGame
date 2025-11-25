@@ -4,9 +4,10 @@ interface DashboardProps {
   onPlaySameDevice: () => void;
   onPlayNetwork: () => void;
   onOpenSettings: () => void;
+  onShowRules: () => void;
 }
 
-function Dashboard({ onPlaySameDevice, onPlayNetwork, onOpenSettings }: DashboardProps) {
+function Dashboard({ onPlaySameDevice, onPlayNetwork, onOpenSettings, onShowRules }: DashboardProps) {
   const { isDarkMode } = useTheme();
 
   const cardBg = isDarkMode ? '#2d2d2d' : 'white';
@@ -151,6 +152,40 @@ function Dashboard({ onPlaySameDevice, onPlayNetwork, onOpenSettings }: Dashboar
           >
             <span style={{ fontSize: '28px' }}>🌐</span>
             Play on Same Network
+          </button>
+
+          <button
+            onClick={onShowRules}
+            style={{
+              padding: '20px 30px',
+              fontSize: 'clamp(18px, 4.5vw, 22px)',
+              fontWeight: 'bold',
+              color: 'white',
+              backgroundColor: '#FF9800',
+              border: 'none',
+              borderRadius: '10px',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+              WebkitTapHighlightColor: 'transparent'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#F57C00';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 6px 8px rgba(0,0,0,0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#FF9800';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+            }}
+          >
+            <span style={{ fontSize: '28px' }}>📖</span>
+            How to Play
           </button>
         </div>
       </div>
