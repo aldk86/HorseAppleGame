@@ -40,11 +40,7 @@ function App() {
     setGameState('ended');
   };
 
-  const handleRestart = () => {
-    setGameState('playing');
-  };
-
-  const handleNewSetup = () => {
+  const handleGoHome = () => {
     setGameState('dashboard');
     setPlayer1({ name: '', color: '#FF6B6B' });
     setPlayer2({ name: '', color: '#4ECDC4' });
@@ -160,8 +156,7 @@ function App() {
       {gameState === 'ended' && (
         <EndModal 
           winner={winner}
-          onRestart={handleRestart}
-          onNewSetup={handleNewSetup}
+          onGoHome={handleGoHome}
         />
       )}
     </div>

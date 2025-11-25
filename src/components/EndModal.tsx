@@ -1,10 +1,9 @@
 interface EndModalProps {
   winner: string;
-  onRestart: () => void;
-  onNewSetup: () => void;
+  onGoHome: () => void;
 }
 
-function EndModal({ winner, onRestart, onNewSetup }: EndModalProps) {
+function EndModal({ winner, onGoHome }: EndModalProps) {
   return (
     <div style={{
       position: 'fixed',
@@ -44,49 +43,25 @@ function EndModal({ winner, onRestart, onNewSetup }: EndModalProps) {
           <strong>{winner}</strong> wins!
         </p>
 
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '15px'
-        }}>
-          <button
-            onClick={onRestart}
-            style={{
-              padding: '15px 30px',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              color: 'white',
-              backgroundColor: '#4CAF50',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              transition: 'background-color 0.2s'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#45a049'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#4CAF50'}
-          >
-            Restart Game
-          </button>
-
-          <button
-            onClick={onNewSetup}
-            style={{
-              padding: '15px 30px',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              color: '#333',
-              backgroundColor: '#e0e0e0',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              transition: 'background-color 0.2s'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#d0d0d0'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e0e0e0'}
-          >
-            New Setup
-          </button>
-        </div>
+        <button
+          onClick={onGoHome}
+          style={{
+            padding: '15px 30px',
+            fontSize: '18px',
+            fontWeight: 'bold',
+            color: 'white',
+            backgroundColor: '#4CAF50',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            transition: 'background-color 0.2s',
+            width: '100%'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#45a049'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#4CAF50'}
+        >
+          🏠 Go to Home
+        </button>
       </div>
     </div>
   );
