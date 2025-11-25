@@ -1,3 +1,5 @@
+import { useTheme } from '../themeContext';
+
 interface NetworkLobbyProps {
   onBack: () => void;
   onCreateGame: () => void;
@@ -5,6 +7,13 @@ interface NetworkLobbyProps {
 }
 
 function NetworkLobby({ onBack, onCreateGame, onJoinGame }: NetworkLobbyProps) {
+  const { isDarkMode } = useTheme();
+
+  const cardBg = isDarkMode ? '#2d2d2d' : 'white';
+  const textColor = isDarkMode ? '#e0e0e0' : '#333';
+  const backButtonBg = isDarkMode ? '#404040' : '#e0e0e0';
+  const backButtonHover = isDarkMode ? '#505050' : '#d0d0d0';
+
   return (
     <div style={{
       display: 'flex',
@@ -16,17 +25,17 @@ function NetworkLobby({ onBack, onCreateGame, onJoinGame }: NetworkLobbyProps) {
       boxSizing: 'border-box'
     }}>
       <div style={{
-        backgroundColor: 'white',
+        backgroundColor: cardBg,
         padding: 'clamp(20px, 5vw, 40px)',
         borderRadius: '12px',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+        boxShadow: isDarkMode ? '0 4px 6px rgba(0,0,0,0.5)' : '0 4px 6px rgba(0,0,0,0.1)',
         width: '100%',
         boxSizing: 'border-box'
       }}>
         <h2 style={{
           fontSize: 'clamp(24px, 6vw, 32px)',
           marginBottom: '20px',
-          color: '#333',
+          color: textColor,
           textAlign: 'center'
         }}>
           Network Play
@@ -97,21 +106,21 @@ function NetworkLobby({ onBack, onCreateGame, onJoinGame }: NetworkLobbyProps) {
               padding: '15px 25px',
               fontSize: 'clamp(14px, 3.5vw, 18px)',
               fontWeight: 'bold',
-              color: '#333',
-              backgroundColor: '#e0e0e0',
+              color: textColor,
+              backgroundColor: backButtonBg,
               border: 'none',
               borderRadius: '8px',
               cursor: 'pointer',
               transition: 'all 0.2s',
-              boxShadow: '0 3px 5px rgba(0,0,0,0.1)',
+              boxShadow: isDarkMode ? '0 3px 5px rgba(0,0,0,0.3)' : '0 3px 5px rgba(0,0,0,0.1)',
               marginTop: '10px',
               WebkitTapHighlightColor: 'transparent'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#d0d0d0';
+              e.currentTarget.style.backgroundColor = backButtonHover;
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#e0e0e0';
+              e.currentTarget.style.backgroundColor = backButtonBg;
             }}
           >
             ← Back to Dashboard

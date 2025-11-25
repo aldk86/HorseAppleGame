@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { gameManager } from '../gameManager';
+import { useTheme } from '../themeContext';
 
 interface CreateGameProps {
   onBack: () => void;
@@ -8,11 +9,21 @@ interface CreateGameProps {
 }
 
 function CreateGame({ onBack, onTimeout, onGameMatched }: CreateGameProps) {
+  const { isDarkMode } = useTheme();
   const [playerName, setPlayerName] = useState('Player 1');
   const [playerColor, setPlayerColor] = useState('#FF6B6B');
   const [gameCreated, setGameCreated] = useState(false);
   const [gameId, setGameId] = useState<string>('');
   const [countdown, setCountdown] = useState(30);
+
+  const cardBg = isDarkMode ? '#2d2d2d' : 'white';
+  const textColor = isDarkMode ? '#e0e0e0' : '#333';
+  const subTextColor = isDarkMode ? '#b0b0b0' : '#555';
+  const inputBg = isDarkMode ? '#1a1a1a' : 'white';
+  const inputBorder = isDarkMode ? '#505050' : '#ddd';
+  const secondaryBg = isDarkMode ? '#1a1a1a' : '#f5f5f5';
+  const backButtonBg = isDarkMode ? '#404040' : '#e0e0e0';
+  const backButtonHover = isDarkMode ? '#505050' : '#d0d0d0';
 
   const PRESET_COLORS = [
     '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A',
@@ -82,17 +93,17 @@ function CreateGame({ onBack, onTimeout, onGameMatched }: CreateGameProps) {
         boxSizing: 'border-box'
       }}>
         <div style={{
-          backgroundColor: 'white',
+          backgroundColor: cardBg,
           padding: 'clamp(20px, 5vw, 40px)',
           borderRadius: '12px',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+          boxShadow: isDarkMode ? '0 4px 6px rgba(0,0,0,0.5)' : '0 4px 6px rgba(0,0,0,0.1)',
           width: '100%',
           boxSizing: 'border-box'
         }}>
           <h2 style={{
             fontSize: 'clamp(24px, 6vw, 32px)',
             marginBottom: '20px',
-            color: '#333',
+            color: textColor,
             textAlign: 'center'
           }}>
             Create New Game
@@ -103,7 +114,7 @@ function CreateGame({ onBack, onTimeout, onGameMatched }: CreateGameProps) {
               display: 'block',
               fontSize: 'clamp(16px, 4vw, 18px)',
               marginBottom: '10px',
-              color: '#555',
+              color: subTextColor,
               fontWeight: 'bold'
             }}>
               Your Name
@@ -116,10 +127,12 @@ function CreateGame({ onBack, onTimeout, onGameMatched }: CreateGameProps) {
                 width: '100%',
                 padding: '12px',
                 fontSize: 'clamp(14px, 3.5vw, 16px)',
-                border: '2px solid #ddd',
+                border: `2px solid ${inputBorder}`,
                 borderRadius: '6px',
                 boxSizing: 'border-box',
-                WebkitAppearance: 'none'
+                WebkitAppearance: 'none',
+                backgroundColor: inputBg,
+                color: textColor
               }}
               placeholder="Enter your name"
             />
@@ -130,7 +143,7 @@ function CreateGame({ onBack, onTimeout, onGameMatched }: CreateGameProps) {
               display: 'block',
               fontSize: 'clamp(16px, 4vw, 18px)',
               marginBottom: '10px',
-              color: '#555',
+              color: subTextColor,
               fontWeight: 'bold'
             }}>
               Your Color
@@ -187,16 +200,16 @@ function CreateGame({ onBack, onTimeout, onGameMatched }: CreateGameProps) {
               padding: '12px',
               fontSize: 'clamp(14px, 3.5vw, 18px)',
               fontWeight: 'bold',
-              color: '#333',
-              backgroundColor: '#e0e0e0',
+              color: textColor,
+              backgroundColor: backButtonBg,
               border: 'none',
               borderRadius: '8px',
               cursor: 'pointer',
               transition: 'background-color 0.2s',
               WebkitTapHighlightColor: 'transparent'
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#d0d0d0'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e0e0e0'}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = backButtonHover}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = backButtonBg}
           >
             Cancel
           </button>
@@ -216,10 +229,10 @@ function CreateGame({ onBack, onTimeout, onGameMatched }: CreateGameProps) {
       boxSizing: 'border-box'
     }}>
       <div style={{
-        backgroundColor: 'white',
+        backgroundColor: cardBg,
         padding: 'clamp(20px, 5vw, 40px)',
         borderRadius: '12px',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+        boxShadow: isDarkMode ? '0 4px 6px rgba(0,0,0,0.5)' : '0 4px 6px rgba(0,0,0,0.1)',
         width: '100%',
         boxSizing: 'border-box',
         textAlign: 'center'
@@ -234,28 +247,28 @@ function CreateGame({ onBack, onTimeout, onGameMatched }: CreateGameProps) {
         <h2 style={{
           fontSize: 'clamp(24px, 6vw, 32px)',
           marginBottom: '15px',
-          color: '#333'
+          color: textColor
         }}>
           Waiting for Opponent...
         </h2>
 
         <div style={{
           fontSize: 'clamp(18px, 4.5vw, 24px)',
-          color: '#666',
+          color: subTextColor,
           marginBottom: '20px'
         }}>
           Game Code: <strong style={{ color: '#4CAF50' }}>{gameId}</strong>
         </div>
 
         <div style={{
-          backgroundColor: '#f5f5f5',
+          backgroundColor: secondaryBg,
           padding: '15px',
           borderRadius: '8px',
           marginBottom: '20px'
         }}>
           <div style={{
             fontSize: 'clamp(16px, 4vw, 20px)',
-            color: '#555',
+            color: subTextColor,
             marginBottom: '10px'
           }}>
             Your Details

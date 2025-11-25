@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { gameManager, GameRoom } from '../gameManager';
+import { useTheme } from '../themeContext';
 
 interface JoinGameProps {
   onBack: () => void;
@@ -7,10 +8,23 @@ interface JoinGameProps {
 }
 
 function JoinGame({ onBack, onJoinGame }: JoinGameProps) {
+  const { isDarkMode } = useTheme();
   const [playerName, setPlayerName] = useState('Player 2');
   const [playerColor, setPlayerColor] = useState('#4ECDC4');
   const [showGames, setShowGames] = useState(false);
   const [availableGames, setAvailableGames] = useState<GameRoom[]>([]);
+
+  const cardBg = isDarkMode ? '#2d2d2d' : 'white';
+  const textColor = isDarkMode ? '#e0e0e0' : '#333';
+  const subTextColor = isDarkMode ? '#b0b0b0' : '#555';
+  const inputBg = isDarkMode ? '#1a1a1a' : 'white';
+  const inputBorder = isDarkMode ? '#505050' : '#ddd';
+  const secondaryBg = isDarkMode ? '#1a1a1a' : '#f5f5f5';
+  const backButtonBg = isDarkMode ? '#404040' : '#e0e0e0';
+  const backButtonHover = isDarkMode ? '#505050' : '#d0d0d0';
+  const gameBorderColor = isDarkMode ? '#505050' : '#ddd';
+  const gameHoverBg = isDarkMode ? '#1a237e' : '#e3f2fd';
+  const gameHoverBorder = isDarkMode ? '#1976D2' : '#2196F3';
 
   const PRESET_COLORS = [
     '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A',
@@ -65,17 +79,17 @@ function JoinGame({ onBack, onJoinGame }: JoinGameProps) {
         boxSizing: 'border-box'
       }}>
         <div style={{
-          backgroundColor: 'white',
+          backgroundColor: cardBg,
           padding: 'clamp(20px, 5vw, 40px)',
           borderRadius: '12px',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+          boxShadow: isDarkMode ? '0 4px 6px rgba(0,0,0,0.5)' : '0 4px 6px rgba(0,0,0,0.1)',
           width: '100%',
           boxSizing: 'border-box'
         }}>
           <h2 style={{
             fontSize: 'clamp(24px, 6vw, 32px)',
             marginBottom: '20px',
-            color: '#333',
+            color: textColor,
             textAlign: 'center'
           }}>
             Join a Game
@@ -86,7 +100,7 @@ function JoinGame({ onBack, onJoinGame }: JoinGameProps) {
               display: 'block',
               fontSize: 'clamp(16px, 4vw, 18px)',
               marginBottom: '10px',
-              color: '#555',
+              color: subTextColor,
               fontWeight: 'bold'
             }}>
               Your Name
@@ -99,10 +113,12 @@ function JoinGame({ onBack, onJoinGame }: JoinGameProps) {
                 width: '100%',
                 padding: '12px',
                 fontSize: 'clamp(14px, 3.5vw, 16px)',
-                border: '2px solid #ddd',
+                border: `2px solid ${inputBorder}`,
                 borderRadius: '6px',
                 boxSizing: 'border-box',
-                WebkitAppearance: 'none'
+                WebkitAppearance: 'none',
+                backgroundColor: inputBg,
+                color: textColor
               }}
               placeholder="Enter your name"
             />
@@ -113,7 +129,7 @@ function JoinGame({ onBack, onJoinGame }: JoinGameProps) {
               display: 'block',
               fontSize: 'clamp(16px, 4vw, 18px)',
               marginBottom: '10px',
-              color: '#555',
+              color: subTextColor,
               fontWeight: 'bold'
             }}>
               Your Color
@@ -170,16 +186,16 @@ function JoinGame({ onBack, onJoinGame }: JoinGameProps) {
               padding: '12px',
               fontSize: 'clamp(14px, 3.5vw, 18px)',
               fontWeight: 'bold',
-              color: '#333',
-              backgroundColor: '#e0e0e0',
+              color: textColor,
+              backgroundColor: backButtonBg,
               border: 'none',
               borderRadius: '8px',
               cursor: 'pointer',
               transition: 'background-color 0.2s',
               WebkitTapHighlightColor: 'transparent'
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#d0d0d0'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e0e0e0'}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = backButtonHover}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = backButtonBg}
           >
             Cancel
           </button>
@@ -199,17 +215,17 @@ function JoinGame({ onBack, onJoinGame }: JoinGameProps) {
       boxSizing: 'border-box'
     }}>
       <div style={{
-        backgroundColor: 'white',
+        backgroundColor: cardBg,
         padding: 'clamp(20px, 5vw, 40px)',
         borderRadius: '12px',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+        boxShadow: isDarkMode ? '0 4px 6px rgba(0,0,0,0.5)' : '0 4px 6px rgba(0,0,0,0.1)',
         width: '100%',
         boxSizing: 'border-box'
       }}>
         <h2 style={{
           fontSize: 'clamp(24px, 6vw, 32px)',
           marginBottom: '20px',
-          color: '#333',
+          color: textColor,
           textAlign: 'center'
         }}>
           Available Games
@@ -219,7 +235,7 @@ function JoinGame({ onBack, onJoinGame }: JoinGameProps) {
           <div style={{
             textAlign: 'center',
             padding: '40px 20px',
-            color: '#999',
+            color: subTextColor,
             fontSize: 'clamp(16px, 4vw, 18px)'
           }}>
             <div style={{ fontSize: '64px', marginBottom: '15px' }}>🔍</div>
@@ -237,20 +253,20 @@ function JoinGame({ onBack, onJoinGame }: JoinGameProps) {
                 key={game.id}
                 onClick={() => handleJoinGame(game)}
                 style={{
-                  backgroundColor: '#f5f5f5',
+                  backgroundColor: secondaryBg,
                   padding: '20px',
                   borderRadius: '8px',
-                  border: '2px solid #ddd',
+                  border: `2px solid ${gameBorderColor}`,
                   cursor: 'pointer',
                   transition: 'all 0.2s'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#2196F3';
-                  e.currentTarget.style.backgroundColor = '#e3f2fd';
+                  e.currentTarget.style.borderColor = gameHoverBorder;
+                  e.currentTarget.style.backgroundColor = gameHoverBg;
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#ddd';
-                  e.currentTarget.style.backgroundColor = '#f5f5f5';
+                  e.currentTarget.style.borderColor = gameBorderColor;
+                  e.currentTarget.style.backgroundColor = secondaryBg;
                 }}
               >
                 <div style={{
@@ -262,13 +278,13 @@ function JoinGame({ onBack, onJoinGame }: JoinGameProps) {
                   <div style={{
                     fontSize: 'clamp(18px, 4.5vw, 22px)',
                     fontWeight: 'bold',
-                    color: '#333'
+                    color: textColor
                   }}>
                     Game: {game.id}
                   </div>
                   <div style={{
                     fontSize: 'clamp(12px, 3vw, 14px)',
-                    color: '#666'
+                    color: subTextColor
                   }}>
                     {getTimeAgo(game.createdAt)}
                   </div>
@@ -294,16 +310,16 @@ function JoinGame({ onBack, onJoinGame }: JoinGameProps) {
             padding: '12px',
             fontSize: 'clamp(14px, 3.5vw, 18px)',
             fontWeight: 'bold',
-            color: '#333',
-            backgroundColor: '#e0e0e0',
+            color: textColor,
+            backgroundColor: backButtonBg,
             border: 'none',
             borderRadius: '8px',
             cursor: 'pointer',
             transition: 'background-color 0.2s',
             WebkitTapHighlightColor: 'transparent'
           }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#d0d0d0'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e0e0e0'}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = backButtonHover}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = backButtonBg}
         >
           Back
         </button>

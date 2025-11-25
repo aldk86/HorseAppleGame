@@ -6,6 +6,9 @@ import JoinGame from './components/JoinGame';
 import Setup from './components/Setup';
 import Board from './components/Board';
 import EndModal from './components/EndModal';
+import Settings from './components/Settings';
+import Rules from './components/Rules';
+import { useTheme } from './themeContext';
 
 export interface Player {
   name: string;
@@ -17,9 +20,10 @@ export interface Position {
   col: number;
 }
 
-export type GameState = 'dashboard' | 'networkLobby' | 'createGame' | 'joinGame' | 'setup' | 'playing' | 'ended';
+export type GameState = 'dashboard' | 'networkLobby' | 'createGame' | 'joinGame' | 'setup' | 'playing' | 'ended' | 'settings' | 'rules';
 
 function App() {
+  const { isDarkMode } = useTheme();
   const [gameState, setGameState] = useState<GameState>('dashboard');
   const [player1, setPlayer1] = useState<Player>({ name: '', color: '#FF6B6B' });
   const [player2, setPlayer2] = useState<Player>({ name: '', color: '#4ECDC4' });
@@ -90,13 +94,21 @@ function App() {
     setGameState('dashboard');
   };
 
+  const handleOpenSettings = () => {
+    setGameState('settings');
+  };
+
+  const handleShowRules = () => {
+    setGameState('rules');
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: '#f5f5f5',
+      backgroundColor: isDarkMode ? '#1a1a1a' : '#f5f5f5',
       fontFamily: 'Arial, sans-serif',
       padding: '10px',
       boxSizing: 'border-box'
@@ -105,6 +117,8 @@ function App() {
         <Dashboard 
           onPlaySameDevice={handlePlaySameDevice}
           onPlayNetwork={handlePlayNetwork}
+          onOpenSettings={handleOpenSettings}
+          onShowRules={handleShowRules}
         />
       )}
 
@@ -158,6 +172,14 @@ function App() {
           winner={winner}
           onGoHome={handleGoHome}
         />
+      )}
+
+      {gameState === 'settings' && (
+        <Settings onBack={handleBackToDashboard} />
+      )}
+
+      {gameState === 'rules' && (
+        <Rules onBack={handleBackToDashboard} />
       )}
     </div>
   );
