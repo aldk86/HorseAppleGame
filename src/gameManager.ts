@@ -8,8 +8,10 @@ export interface GameRoom {
 class GameManager {
   private games: Map<string, GameRoom> = new Map();
   private listeners: Set<() => void> = new Set();
+  private connectionListeners: Set<(connected: boolean) => void> = new Set();
   private ws: WebSocket | null = null;
   private reconnectTimer: number | null = null;
+  private isConnected: boolean = false;
 
   constructor() {
     this.connectWebSocket();
@@ -197,6 +199,24 @@ class GameManager {
     };
   }
 
+  subscribeToConnection(listener: (connected: boolean) => void) {
+    this.connectionListeners.add(listener);
+    // Immediately notify with current status
+    listener(this.isConnected);
+  }
+
+  unsubscribeFromConnection(listener: (connected: boolean) => void) {
+    this.connectionListeners.delete(listener);
+  }
+
+  getConnectionStatus(): boolean {
+    return this.isConnected;
+  }
+
+  private notifyConnectionListeners() {
+    this.connectionListeners.forEach(listener => listener(this.isConnected));
+  }
+
   private notifyListeners() {
     this.listeners.forEach(listener => listener());
   }
@@ -216,6 +236,8 @@ class GameManager {
 
       this.ws.onopen = () => {
         console.log('🔗 Connected to game server');
+        this.isConnected = true;
+        this.notifyConnectionListeners();
         // Request current games list
         this.ws?.send(JSON.stringify({ type: 'getGames' }));
       };
@@ -238,6 +260,8 @@ class GameManager {
 
       this.ws.onclose = () => {
         console.log('❌ Disconnected from game server');
+        this.isConnected = false;
+        this.notifyConnectionListeners();
         this.ws = null;
         // Attempt to reconnect after 3 seconds
         this.reconnectTimer = window.setTimeout(() => {

@@ -1,4 +1,6 @@
 import { useTheme } from '../themeContext';
+import { useState, useEffect } from 'react';
+import { gameManager } from '../gameManager';
 
 interface DashboardProps {
   onPlaySameDevice: () => void;
@@ -9,6 +11,19 @@ interface DashboardProps {
 
 function Dashboard({ onPlaySameDevice, onPlayNetwork, onOpenSettings, onShowRules }: DashboardProps) {
   const { isDarkMode } = useTheme();
+  const [isConnected, setIsConnected] = useState(gameManager.getConnectionStatus());
+
+  useEffect(() => {
+    const handleConnectionChange = (connected: boolean) => {
+      setIsConnected(connected);
+    };
+
+    gameManager.subscribeToConnection(handleConnectionChange);
+
+    return () => {
+      gameManager.unsubscribeFromConnection(handleConnectionChange);
+    };
+  }, []);
 
   const cardBg = isDarkMode ? '#2d2d2d' : 'white';
   const textColor = isDarkMode ? '#e0e0e0' : '#333';
@@ -25,6 +40,34 @@ function Dashboard({ onPlaySameDevice, onPlayNetwork, onOpenSettings, onShowRule
       boxSizing: 'border-box',
       position: 'relative'
     }}>
+      {/* Connection Status Indicator */}
+      <div style={{
+        position: 'absolute',
+        top: '-10px',
+        left: '10px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        padding: '8px 12px',
+        backgroundColor: isDarkMode ? '#404040' : 'white',
+        border: `2px solid ${isDarkMode ? '#505050' : '#ddd'}`,
+        borderRadius: '20px',
+        fontSize: '14px',
+        fontWeight: 'bold',
+        color: isConnected ? '#4CAF50' : '#F44336',
+        boxShadow: isDarkMode ? '0 2px 4px rgba(0,0,0,0.5)' : '0 2px 4px rgba(0,0,0,0.1)',
+        zIndex: 10
+      }}>
+        <span style={{
+          width: '10px',
+          height: '10px',
+          borderRadius: '50%',
+          backgroundColor: isConnected ? '#4CAF50' : '#F44336',
+          animation: isConnected ? 'pulse 2s infinite' : 'none'
+        }} />
+        {isConnected ? 'Connected' : 'Offline'}
+      </div>
+
       {/* Settings Button */}
       <button
         onClick={onOpenSettings}
