@@ -3,6 +3,7 @@ import { Player, Position } from '../App';
 import { getLegalMoves, coordEquals, hasLegalMoves } from '../gameLogic';
 import { gameManager } from '../gameManager';
 import { useTheme, KNIGHT_SYMBOLS } from '../themeContext';
+import { soundManager } from '../sounds';
 
 interface BoardProps {
   player1: Player;
@@ -24,6 +25,15 @@ function Board({ player1, player2, onGameEnd, onOpponentLeft, isNetworkGame = fa
   const [highlightedMoves, setHighlightedMoves] = useState<Position[]>([]);
   const [moveStartTime, setMoveStartTime] = useState<number>(Date.now());
   const [elapsedTime, setElapsedTime] = useState<number>(0);
+  const [hasPlayedStartSound, setHasPlayedStartSound] = useState<boolean>(false);
+
+  // Play game start sound in network mode
+  useEffect(() => {
+    if (isNetworkGame && !hasPlayedStartSound) {
+      soundManager.playGameStart();
+      setHasPlayedStartSound(true);
+    }
+  }, [isNetworkGame, hasPlayedStartSound]);
 
   useEffect(() => {
     if (currentTurn === 1) {
@@ -55,11 +65,16 @@ function Board({ player1, player2, onGameEnd, onOpponentLeft, isNetworkGame = fa
           setPlayer2Pos(move.newPos);
         }
         setApples(move.apples);
-        setCurrentTurn(move.nextTurn);
+        setCurrentTurn(move.nextTurn as 1 | 2);
         setMoveStartTime(Date.now());
         setElapsedTime(0);
         setSelectedPos(null);
         setHighlightedMoves([]);
+        
+        // Play turn notification if it's now my turn
+        if (playerRole && move.nextTurn === playerRole) {
+          soundManager.playTurnNotification();
+        }
       });
 
       const unsubscribeEnd = gameManager.onGameEnded((winner) => {
@@ -260,9 +275,15 @@ function Board({ player1, player2, onGameEnd, onOpponentLeft, isNetworkGame = fa
         textAlign: 'center',
         display: 'flex',
         flexDirection: 'column',
-        gap: '8px'
+        gap: '8px',
+        animation: (isNetworkGame && playerRole === currentTurn) ? 'pulse 2s infinite' : 'none',
+        border: (isNetworkGame && playerRole === currentTurn) ? `3px solid ${currentPlayer.color}` : 'none'
       }}>
-        <div>{currentPlayer.name}'s Turn</div>
+        <div>
+          {isNetworkGame && playerRole === currentTurn && '🔔 '}
+          {currentPlayer.name}'s Turn
+          {isNetworkGame && playerRole === currentTurn && ' 🔔'}
+        </div>
         <div style={{ fontSize: 'clamp(16px, 4vw, 20px)', color: isDarkMode ? '#b0b0b0' : '#666' }}>⏱️ {elapsedTime}s</div>
       </div>
 
