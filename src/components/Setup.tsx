@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Player } from '../App';
+import { useTheme } from '../themeContext';
 
 interface SetupProps {
   onStartGame: (player1: Player, player2: Player) => void;
@@ -11,10 +12,17 @@ const PRESET_COLORS = [
 ];
 
 function Setup({ onStartGame }: SetupProps) {
+  const { isDarkMode } = useTheme();
   const [player1Name, setPlayer1Name] = useState('Player 1');
   const [player2Name, setPlayer2Name] = useState('Player 2');
   const [player1Color, setPlayer1Color] = useState('#FF6B6B');
   const [player2Color, setPlayer2Color] = useState('#4ECDC4');
+
+  const cardBg = isDarkMode ? '#2d2d2d' : 'white';
+  const textColor = isDarkMode ? '#e0e0e0' : '#333';
+  const inputBg = isDarkMode ? '#1a1a1a' : 'white';
+  const inputBorder = isDarkMode ? '#505050' : '#ddd';
+  const subTextColor = isDarkMode ? '#b0b0b0' : '#555';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,10 +37,10 @@ function Setup({ onStartGame }: SetupProps) {
 
   return (
     <div style={{
-      backgroundColor: 'white',
+      backgroundColor: cardBg,
       padding: 'clamp(20px, 5vw, 40px)',
       borderRadius: '12px',
-      boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+      boxShadow: isDarkMode ? '0 4px 6px rgba(0,0,0,0.5)' : '0 4px 6px rgba(0,0,0,0.1)',
       maxWidth: '500px',
       width: '100%',
       boxSizing: 'border-box'
@@ -41,14 +49,14 @@ function Setup({ onStartGame }: SetupProps) {
         textAlign: 'center',
         marginBottom: '30px',
         fontSize: 'clamp(24px, 6vw, 32px)',
-        color: '#333'
+        color: textColor
       }}>
         🐴 Pferdeäpfel 🍎
       </h1>
 
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '30px' }}>
-          <h2 style={{ fontSize: '20px', marginBottom: '15px', color: '#555' }}>
+          <h2 style={{ fontSize: '20px', marginBottom: '15px', color: subTextColor }}>
             Player 1
           </h2>
           <input
@@ -60,11 +68,13 @@ function Setup({ onStartGame }: SetupProps) {
               width: '100%',
               padding: '12px',
               fontSize: 'clamp(14px, 3.5vw, 16px)',
-              border: '2px solid #ddd',
+              border: `2px solid ${inputBorder}`,
               borderRadius: '6px',
               marginBottom: '10px',
               boxSizing: 'border-box',
-              WebkitAppearance: 'none'
+              WebkitAppearance: 'none',
+              backgroundColor: inputBg,
+              color: textColor
             }}
             required
           />
@@ -92,7 +102,7 @@ function Setup({ onStartGame }: SetupProps) {
         </div>
 
         <div style={{ marginBottom: '30px' }}>
-          <h2 style={{ fontSize: 'clamp(18px, 4.5vw, 20px)', marginBottom: '15px', color: '#555' }}>
+          <h2 style={{ fontSize: 'clamp(18px, 4.5vw, 20px)', marginBottom: '15px', color: subTextColor }}>
             Player 2
           </h2>
           <input
@@ -104,11 +114,13 @@ function Setup({ onStartGame }: SetupProps) {
               width: '100%',
               padding: '12px',
               fontSize: 'clamp(14px, 3.5vw, 16px)',
-              border: '2px solid #ddd',
+              border: `2px solid ${inputBorder}`,
               borderRadius: '6px',
               marginBottom: '10px',
               boxSizing: 'border-box',
-              WebkitAppearance: 'none'
+              WebkitAppearance: 'none',
+              backgroundColor: inputBg,
+              color: textColor
             }}
             required
           />

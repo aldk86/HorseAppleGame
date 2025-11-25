@@ -1,9 +1,16 @@
+import { useTheme } from '../themeContext';
+
 interface EndModalProps {
   winner: string;
   onGoHome: () => void;
 }
 
 function EndModal({ winner, onGoHome }: EndModalProps) {
+  const { isDarkMode } = useTheme();
+
+  const cardBg = isDarkMode ? '#2d2d2d' : 'white';
+  const textColor = isDarkMode ? '#e0e0e0' : '#333';
+
   return (
     <div style={{
       position: 'fixed',
@@ -11,17 +18,17 @@ function EndModal({ winner, onGoHome }: EndModalProps) {
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.85)' : 'rgba(0, 0, 0, 0.7)',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
       zIndex: 1000
     }}>
       <div style={{
-        backgroundColor: 'white',
+        backgroundColor: cardBg,
         padding: 'clamp(20px, 5vw, 40px)',
         borderRadius: '12px',
-        boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
+        boxShadow: isDarkMode ? '0 8px 16px rgba(0,0,0,0.6)' : '0 8px 16px rgba(0,0,0,0.2)',
         textAlign: 'center',
         maxWidth: '400px',
         width: '90%',
@@ -38,7 +45,7 @@ function EndModal({ winner, onGoHome }: EndModalProps) {
         <p style={{
           fontSize: 'clamp(18px, 5vw, 24px)',
           marginBottom: '30px',
-          color: '#333'
+          color: textColor
         }}>
           <strong>{winner}</strong> wins!
         </p>

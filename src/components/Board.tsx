@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Player, Position } from '../App';
 import { getLegalMoves, coordEquals, hasLegalMoves } from '../gameLogic';
 import { gameManager } from '../gameManager';
+import { useTheme, KNIGHT_SYMBOLS } from '../themeContext';
 
 interface BoardProps {
   player1: Player;
@@ -14,6 +15,7 @@ interface BoardProps {
 }
 
 function Board({ player1, player2, onGameEnd, onOpponentLeft, isNetworkGame = false, gameId, playerRole }: BoardProps) {
+  const { isDarkMode, boardTheme, knightSymbol } = useTheme();
   const [player1Pos, setPlayer1Pos] = useState<Position>({ row: 0, col: 0 });
   const [player2Pos, setPlayer2Pos] = useState<Position>({ row: 7, col: 7 });
   const [apples, setApples] = useState<Position[]>([]);
@@ -158,12 +160,12 @@ function Board({ player1, player2, onGameEnd, onOpponentLeft, isNetworkGame = fa
     const isHighlighted = highlightedMoves.some(move => coordEquals(move, { row, col }));
     const isSelected = selectedPos && coordEquals(selectedPos, { row, col });
 
-    let backgroundColor = isLightSquare ? '#f0d9b5' : '#b58863';
+    let backgroundColor = isLightSquare ? boardTheme.lightSquare : boardTheme.darkSquare;
     if (isHighlighted) {
-      backgroundColor = '#90EE90';
+      backgroundColor = boardTheme.highlight;
     }
     if (isSelected) {
-      backgroundColor = '#FFD700';
+      backgroundColor = boardTheme.selected;
     }
 
     const cellSize = typeof window !== 'undefined' && window.innerWidth < 480 ? 'min(10vw, 45px)' : 'min(60px, 10vw)';
@@ -189,8 +191,8 @@ function Board({ player1, player2, onGameEnd, onOpponentLeft, isNetworkGame = fa
           WebkitTapHighlightColor: 'transparent'
         }}
       >
-        {isPlayer1 && <span style={{ filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.3))' }}>♘</span>}
-        {isPlayer2 && <span style={{ filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.3))' }}>♞</span>}
+        {isPlayer1 && <span style={{ filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.3))' }}>{KNIGHT_SYMBOLS[knightSymbol].player1}</span>}
+        {isPlayer2 && <span style={{ filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.3))' }}>{KNIGHT_SYMBOLS[knightSymbol].player2}</span>}
         {hasApple && !isPlayer1 && !isPlayer2 && '🍎'}
       </div>
     );
@@ -199,6 +201,15 @@ function Board({ player1, player2, onGameEnd, onOpponentLeft, isNetworkGame = fa
   const currentPlayer = currentTurn === 1 ? player1 : player2;
 
   const cellSize = typeof window !== 'undefined' && window.innerWidth < 480 ? 'min(10vw, 45px)' : 'min(60px, 10vw)';
+
+  const cardBg = isDarkMode ? '#2d2d2d' : 'white';
+  const textColor = isDarkMode ? '#e0e0e0' : '#333';
+  const modeLabelBg = isDarkMode 
+    ? (isNetworkGame ? '#1a237e' : '#424242')
+    : (isNetworkGame ? '#e3f2fd' : '#f5f5f5');
+  const modeLabelColor = isDarkMode
+    ? (isNetworkGame ? '#90caf9' : '#b0b0b0')
+    : (isNetworkGame ? '#1976D2' : '#666');
 
   return (
     <div style={{
@@ -212,11 +223,11 @@ function Board({ player1, player2, onGameEnd, onOpponentLeft, isNetworkGame = fa
     }}>
       {/* Play Mode Label */}
       <div style={{
-        backgroundColor: isNetworkGame ? '#e3f2fd' : '#f5f5f5',
+        backgroundColor: modeLabelBg,
         padding: '8px 16px',
         borderRadius: '20px',
         fontSize: 'clamp(12px, 3vw, 14px)',
-        color: isNetworkGame ? '#1976D2' : '#666',
+        color: modeLabelColor,
         fontWeight: '600',
         display: 'flex',
         alignItems: 'center',
@@ -228,20 +239,21 @@ function Board({ player1, player2, onGameEnd, onOpponentLeft, isNetworkGame = fa
           <span style={{ 
             marginLeft: '8px', 
             padding: '2px 8px', 
-            backgroundColor: 'white', 
+            backgroundColor: isDarkMode ? '#404040' : 'white', 
             borderRadius: '10px',
-            fontSize: 'clamp(10px, 2.5vw, 12px)'
+            fontSize: 'clamp(10px, 2.5vw, 12px)',
+            color: textColor
           }}>
-            You: {playerRole === 1 ? '♘ ' + player1.name : '♞ ' + player2.name}
+            You: {playerRole === 1 ? KNIGHT_SYMBOLS[knightSymbol].player1 + ' ' + player1.name : KNIGHT_SYMBOLS[knightSymbol].player2 + ' ' + player2.name}
           </span>
         )}
       </div>
 
       <div style={{
-        backgroundColor: 'white',
+        backgroundColor: cardBg,
         padding: '15px 20px',
         borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        boxShadow: isDarkMode ? '0 2px 4px rgba(0,0,0,0.5)' : '0 2px 4px rgba(0,0,0,0.1)',
         fontSize: 'clamp(18px, 5vw, 24px)',
         fontWeight: 'bold',
         color: currentPlayer.color,
@@ -251,15 +263,15 @@ function Board({ player1, player2, onGameEnd, onOpponentLeft, isNetworkGame = fa
         gap: '8px'
       }}>
         <div>{currentPlayer.name}'s Turn</div>
-        <div style={{ fontSize: 'clamp(16px, 4vw, 20px)', color: '#666' }}>⏱️ {elapsedTime}s</div>
+        <div style={{ fontSize: 'clamp(16px, 4vw, 20px)', color: isDarkMode ? '#b0b0b0' : '#666' }}>⏱️ {elapsedTime}s</div>
       </div>
 
       <div style={{
         display: 'inline-block',
-        backgroundColor: 'white',
+        backgroundColor: cardBg,
         padding: '8px',
         borderRadius: '8px',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+        boxShadow: isDarkMode ? '0 4px 6px rgba(0,0,0,0.5)' : '0 4px 6px rgba(0,0,0,0.1)',
         overflow: 'auto',
         maxWidth: '100%'
       }}>
@@ -276,10 +288,10 @@ function Board({ player1, player2, onGameEnd, onOpponentLeft, isNetworkGame = fa
       </div>
 
       <div style={{
-        backgroundColor: 'white',
+        backgroundColor: cardBg,
         padding: '15px',
         borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        boxShadow: isDarkMode ? '0 2px 4px rgba(0,0,0,0.5)' : '0 2px 4px rgba(0,0,0,0.1)',
         display: 'flex',
         gap: 'clamp(15px, 5vw, 40px)',
         fontSize: 'clamp(14px, 3.5vw, 16px)',
@@ -287,11 +299,11 @@ function Board({ player1, player2, onGameEnd, onOpponentLeft, isNetworkGame = fa
         justifyContent: 'center'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{ fontSize: '24px' }}>♘</span>
+          <span style={{ fontSize: '24px' }}>{KNIGHT_SYMBOLS[knightSymbol].player1}</span>
           <span style={{ fontWeight: 'bold', color: player1.color }}>{player1.name}</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{ fontSize: '24px' }}>♞</span>
+          <span style={{ fontSize: '24px' }}>{KNIGHT_SYMBOLS[knightSymbol].player2}</span>
           <span style={{ fontWeight: 'bold', color: player2.color }}>{player2.name}</span>
         </div>
       </div>
