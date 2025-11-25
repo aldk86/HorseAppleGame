@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react';
 import { Player, Position } from '../App';
 import { getLegalMoves, coordEquals, hasLegalMoves } from '../gameLogic';
+import { gameManager } from '../gameManager';
 
 interface BoardProps {
   player1: Player;
   player2: Player;
   onGameEnd: (winnerName: string) => void;
+  onOpponentLeft?: () => void;
+  isNetworkGame?: boolean;
+  gameId?: string;
+  playerRole?: 1 | 2; // Which player am I in network game
 }
 
-function Board({ player1, player2, onGameEnd }: BoardProps) {
+function Board({ player1, player2, onGameEnd, onOpponentLeft, isNetworkGame = false, gameId, playerRole }: BoardProps) {
   const [player1Pos, setPlayer1Pos] = useState<Position>({ row: 0, col: 0 });
   const [player2Pos, setPlayer2Pos] = useState<Position>({ row: 7, col: 7 });
   const [apples, setApples] = useState<Position[]>([]);
@@ -37,7 +42,50 @@ function Board({ player1, player2, onGameEnd }: BoardProps) {
     return () => clearInterval(interval);
   }, [moveStartTime]);
 
+  // Network game: listen for opponent moves
+  useEffect(() => {
+    if (isNetworkGame && gameId) {
+      const unsubscribeMove = gameManager.onOpponentMove((move) => {
+        // Apply opponent's move
+        if (move.player === 1) {
+          setPlayer1Pos(move.newPos);
+        } else {
+          setPlayer2Pos(move.newPos);
+        }
+        setApples(move.apples);
+        setCurrentTurn(move.nextTurn);
+        setMoveStartTime(Date.now());
+        setElapsedTime(0);
+        setSelectedPos(null);
+        setHighlightedMoves([]);
+      });
+
+      const unsubscribeEnd = gameManager.onGameEnded((winner) => {
+        // Opponent won or lost
+        onGameEnd(winner);
+      });
+
+      const unsubscribeLeft = gameManager.onOpponentLeft(() => {
+        // Opponent left the game
+        if (onOpponentLeft) {
+          onOpponentLeft();
+        }
+      });
+
+      return () => {
+        unsubscribeMove();
+        unsubscribeEnd();
+        unsubscribeLeft();
+      };
+    }
+  }, [isNetworkGame, gameId, onGameEnd, onOpponentLeft]);
+
   const handleCellClick = (row: number, col: number) => {
+    // In network game, only allow moves on your turn and if it's your player
+    if (isNetworkGame && playerRole && currentTurn !== playerRole) {
+      return; // Not your turn
+    }
+
     const clickedPos: Position = { row, col };
     const currentPos = currentTurn === 1 ? player1Pos : player2Pos;
     const opponentPos = currentTurn === 1 ? player2Pos : player1Pos;
@@ -63,9 +111,18 @@ function Board({ player1, player2, onGameEnd }: BoardProps) {
       
       if (coordEquals(clickedPos, opponentPos)) {
         const winnerName = currentTurn === 1 ? player1.name : player2.name;
+        
+        // Notify opponent in network game
+        if (isNetworkGame && gameId) {
+          gameManager.sendGameEnd(winnerName);
+        }
+        
         onGameEnd(winnerName);
         return;
       }
+
+      const newApples = [...apples, oldPos];
+      const nextTurn: 1 | 2 = currentTurn === 1 ? 2 : 1;
 
       if (currentTurn === 1) {
         setPlayer1Pos(clickedPos);
@@ -73,12 +130,23 @@ function Board({ player1, player2, onGameEnd }: BoardProps) {
         setPlayer2Pos(clickedPos);
       }
 
-      setApples([...apples, oldPos]);
+      setApples(newApples);
       setSelectedPos(null);
       setHighlightedMoves([]);
-      setCurrentTurn(currentTurn === 1 ? 2 : 1);
+      setCurrentTurn(nextTurn);
       setMoveStartTime(Date.now());
       setElapsedTime(0);
+
+      // Send move to server in network game
+      if (isNetworkGame && gameId) {
+        gameManager.sendMove({
+          player: currentTurn,
+          oldPos,
+          newPos: clickedPos,
+          apples: newApples,
+          nextTurn
+        });
+      }
     }
   };
 
@@ -142,6 +210,33 @@ function Board({ player1, player2, onGameEnd }: BoardProps) {
       maxWidth: '600px',
       boxSizing: 'border-box'
     }}>
+      {/* Play Mode Label */}
+      <div style={{
+        backgroundColor: isNetworkGame ? '#e3f2fd' : '#f5f5f5',
+        padding: '8px 16px',
+        borderRadius: '20px',
+        fontSize: 'clamp(12px, 3vw, 14px)',
+        color: isNetworkGame ? '#1976D2' : '#666',
+        fontWeight: '600',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px'
+      }}>
+        <span>{isNetworkGame ? '🌐' : '📱'}</span>
+        <span>{isNetworkGame ? 'Network Play' : 'Same Device'}</span>
+        {isNetworkGame && playerRole && (
+          <span style={{ 
+            marginLeft: '8px', 
+            padding: '2px 8px', 
+            backgroundColor: 'white', 
+            borderRadius: '10px',
+            fontSize: 'clamp(10px, 2.5vw, 12px)'
+          }}>
+            You: {playerRole === 1 ? '♘ ' + player1.name : '♞ ' + player2.name}
+          </span>
+        )}
+      </div>
+
       <div style={{
         backgroundColor: 'white',
         padding: '15px 20px',
