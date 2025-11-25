@@ -20,7 +20,7 @@ export const getLegalMoves = (
   position: Position,
   apples: Position[],
   ownPos: Position,
-  oppPos: Position
+  _oppPos: Position
 ): Position[] => {
   const legalMoves: Position[] = [];
 

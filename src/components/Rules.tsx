@@ -13,7 +13,7 @@ function Rules({ onBack }: RulesProps) {
   const borderColor = isDarkMode ? '#404040' : '#ddd';
 
   // Mini board cell style
-  const getCellStyle = (isLight: boolean, hasApple: boolean, hasHorse: string | null) => ({
+  const getCellStyle = (isLight: boolean, hasApple: boolean) => ({
     width: '35px',
     height: '35px',
     display: 'flex',
@@ -63,7 +63,7 @@ function Rules({ onBack }: RulesProps) {
             {row.map((cell, colIndex) => {
               const isLight = (rowIndex + colIndex) % 2 === 0;
               return (
-                <div key={colIndex} style={getCellStyle(isLight, false, cell)}>
+                <div key={colIndex} style={getCellStyle(isLight, false)}>
                   {cell === '♞' && <span style={{ fontSize: '24px' }}>♞</span>}
                   {cell === '✓' && <span style={{ color: '#4CAF50', fontWeight: 'bold' }}>●</span>}
                 </div>
@@ -95,11 +95,11 @@ function Rules({ onBack }: RulesProps) {
                 <div 
                   key={colIndex} 
                   style={{
-                    ...getCellStyle(isLight, cell === '🍎', cell),
+                    ...getCellStyle(isLight, cell === '🍎'),
                     boxShadow: isHighlighted ? '0 0 0 3px #4CAF50 inset' : 'none',
                     backgroundColor: isHighlighted 
                       ? (isDarkMode ? '#2d4d2d' : '#c8e6c9')
-                      : getCellStyle(isLight, cell === '🍎', cell).backgroundColor
+                      : getCellStyle(isLight, cell === '🍎').backgroundColor
                   }}
                 >
                   {cell && <span>{cell}</span>}
@@ -130,7 +130,7 @@ function Rules({ onBack }: RulesProps) {
             {row.map((cell, colIndex) => {
               const isLight = (rowIndex + colIndex) % 2 === 0;
               return (
-                <div key={colIndex} style={getCellStyle(isLight, cell === '🍎', cell)}>
+                <div key={colIndex} style={getCellStyle(isLight, cell === '🍎')}>
                   {cell && <span>{cell}</span>}
                 </div>
               );
